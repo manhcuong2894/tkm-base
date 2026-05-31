@@ -48,6 +48,7 @@
 #define SAVE_ACCOUNT_SYSTEM
 #define SYSTEM_FLAG_NAT
 #define ITEM_CHAT_SELL_SYSTEM
+#define CB_DANGKYINGAME				1
 //#define EFFECT_KERNEL_VERTEX
 #define MAX_INSTANCE_GAME
 #define SHUTDOWN_LEVEL_WING3
@@ -96,4 +97,3 @@
 #else
 #define jdk_dev_chat_fx				0
 #endif // SHUTDOWN_SCALEFORM_INFO
-
