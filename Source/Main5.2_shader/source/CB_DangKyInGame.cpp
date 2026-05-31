@@ -145,7 +145,7 @@ void CB_DangKyInGame::DrawText(HFONT font, float x, float y, DWORD color, int wi
 	g_pRenderText->SetFont(font);
 	g_pRenderText->SetTextColor(color);
 	g_pRenderText->SetBgColor(0);
-	g_pRenderText->RenderText((int)(x / g_fScreenRate_x), (int)(y / g_fScreenRate_y), buff, (int)(width / g_fScreenRate_x), 0, align);
+	g_pRenderText->RenderText((int)x, (int)y, buff, width, 0, align);
 
 	g_pRenderText->SetFont(oldFont);
 	g_pRenderText->SetTextColor(oldTextColor);
