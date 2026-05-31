@@ -82,6 +82,19 @@ void CB_DangKyInGame::Close()
 {
 	this->OpenDKTK = false;
 	this->EnterPressed = false;
+
+	for (int i = 0; i < TYPE_INPUT_DKTK::eMaxINPUT; i++)
+	{
+		if (this->CInputData[i])
+		{
+			this->CInputData[i]->SetState(UISTATE_HIDE);
+		}
+	}
+
+	if (this->CInputCaptCha)
+	{
+		this->CInputCaptCha->SetState(UISTATE_HIDE);
+	}
 }
 
 void CB_DangKyInGame::ResetCaptcha()
@@ -172,6 +185,10 @@ bool CB_DangKyInGame::RenderInput(float x, float y, float w, float h, CUITextInp
 	}
 
 	this->DrawBar(x - 3.0f, y - 3.0f, w + 6.0f, h + 5.0f, 0.0f, 0.0f, 0.0f, 0.85f);
+	if (input->GetState() == UISTATE_HIDE)
+	{
+		input->SetState(UISTATE_NORMAL);
+	}
 	input->SetPosition(x, y);
 	input->Render();
 
@@ -217,10 +234,17 @@ void CB_DangKyInGame::OpenOnOff()
 	{
 		this->ResetCaptcha();
 	}
+	else
+	{
+		this->Close();
+	}
 }
 
 bool CB_DangKyInGame::RenderWindow(int X, int Y)
 {
+	(void)X;
+	(void)Y;
+
 	if (!this->OpenDKTK)
 	{
 		return false;
@@ -228,18 +252,8 @@ bool CB_DangKyInGame::RenderWindow(int X, int Y)
 
 	const float windowW = 262.0f;
 	const float windowH = 250.0f;
-	float startX = (float)((gwinhandle->GetScreenX() - windowW) * 0.5f);
+	float startX = (640.0f * 0.5f) - (windowW * 0.5f);
 	float startY = 150.0f;
-
-	if (X > 0)
-	{
-		startX = (float)X;
-	}
-
-	if (Y > 0)
-	{
-		startY = (float)Y;
-	}
 
 	window_backmsg(startX, startY, windowW, windowH);
 	this->DrawText(g_hFontBold, startX, startY + 11.0f, 0xFFFFFFFF, (int)windowW, RT3_SORT_CENTER, "Dang ky tai khoan");

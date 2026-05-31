@@ -186,14 +186,17 @@ void CWin::Render()
 {
 	if (m_bShow)
 	{
+#if(CB_DANGKYINGAME)
+		if (gCB_DangKyInGame->RenderWindow(0, 0))
+		{
+			return;
+		}
+#endif
+
 		if (m_psprBg)
 			m_psprBg->Render();
 
 		RenderControls();
-
-#if(CB_DANGKYINGAME)
-		gCB_DangKyInGame->RenderWindow(0, 0);
-#endif
 	}
 }
 

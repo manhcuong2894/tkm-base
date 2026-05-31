@@ -434,6 +434,29 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 
 void CLoginWin::UpdateWhileShow(double dDeltaTick)
 {
+#if(CB_DANGKYINGAME)
+	if (gCB_DangKyInGame->IsOpen())
+	{
+		if (m_pIDInputBox)
+		{
+			m_pIDInputBox->SetState(UISTATE_HIDE);
+		}
+		if (m_pPassInputBox)
+		{
+			m_pPassInputBox->SetState(UISTATE_HIDE);
+		}
+		return;
+	}
+
+	if (m_pIDInputBox && m_pIDInputBox->GetState() == UISTATE_HIDE)
+	{
+		m_pIDInputBox->SetState(UISTATE_NORMAL);
+	}
+	if (m_pPassInputBox && m_pPassInputBox->GetState() == UISTATE_HIDE)
+	{
+		m_pPassInputBox->SetState(UISTATE_NORMAL);
+	}
+#endif
 #if MAIN_UPDATE > 303
 	if (gmProtect->remember_account)
 	{
