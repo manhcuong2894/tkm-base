@@ -51,6 +51,7 @@
 #include "w_CursedTemple.h"
 #include "SummonSystem.h"
 #include "ProtocolSend.h"
+#include "CB_DangKyInGame.h"
 #include "CharacterManager.h"
 #include "SkillManager.h"
 
@@ -14539,6 +14540,31 @@ BOOL TranslateProtocol(int HeadCode, uint8_t* ReceiveBuffer, int Size, BOOL bEnc
 	case 0x71:
 		ReceivePing(ReceiveBuffer);
 		break;
+	case 0xD3:
+	{
+		int subcode;
+
+		if (ReceiveBuffer[0] == 0xC1)
+		{
+			LPPHEADER_DEFAULT_SUBCODE Data = (LPPHEADER_DEFAULT_SUBCODE)ReceiveBuffer;
+			subcode = Data->SubCode;
+		}
+		else
+		{
+			LPPHEADER_DEFAULT_SUBCODE_WORD Data = (LPPHEADER_DEFAULT_SUBCODE_WORD)ReceiveBuffer;
+			subcode = Data->SubCode;
+		}
+
+		switch (subcode)
+		{
+#if(CB_DANGKYINGAME)
+		case 0x05:
+			gCB_DangKyInGame->RecvKQRegInGame((XULY_CGPACKET*)ReceiveBuffer);
+			break;
+#endif
+		}
+	}
+	break;
 	case 0x81:
 		ReceiveStorageGold(ReceiveBuffer);
 		break;

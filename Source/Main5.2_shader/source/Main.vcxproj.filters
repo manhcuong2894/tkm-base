@@ -211,6 +211,9 @@
     <ClCompile Include="Button.cpp">
       <Filter>MU\Interface\ui</Filter>
     </ClCompile>
+    <ClCompile Include="CB_DangKyInGame.cpp">
+      <Filter>MU\Interface\ui</Filter>
+    </ClCompile>
     <ClCompile Include="CharInfoBalloon.cpp">
       <Filter>MU\Interface\ui</Filter>
     </ClCompile>
@@ -1420,6 +1423,9 @@
       <Filter>MU\Interface\ui</Filter>
     </ClInclude>
     <ClInclude Include="Button.h">
+      <Filter>MU\Interface\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="CB_DangKyInGame.h">
       <Filter>MU\Interface\ui</Filter>
     </ClInclude>
     <ClInclude Include="CharInfoBalloon.h">

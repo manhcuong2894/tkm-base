@@ -214,3 +214,18 @@ void GJAccountLevelSaveSend(int aIndex,int AccountLevel,int AccountExpireTime,ch
 void GJServerUserInfoSend();
 void GJAccountLockSaveSend(int aIndex,int Lock);
 void GJAccountServerInfoSend(int aIndex, int AccountLevel, char* AccountExpireDate, int Lock );
+#if(CB_DANGKYINGAME)
+struct SDHP_REGISTRO_GS_SEND_JS
+{
+	PBMSG_HEAD header;
+	WORD aIndexUser;
+	BYTE TypeSend;
+	char account[11];
+	char password[21];
+	char numcode[8];
+	char sodienthoai[14];
+};
+
+void GJSendRegOrLostPass(int aIndex, BYTE typesend, char* account, char* password, char* numcode, char* sodienthoai);
+void JGRegAccountKQ(SDHP_JOIN_SERVER_INFO_RECV* lpMsg);
+#endif

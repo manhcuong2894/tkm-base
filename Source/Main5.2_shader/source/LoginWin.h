@@ -46,6 +46,9 @@ protected:
 #endif // SAVE_ACCOUNT_SYSTEM
 	CUITextInputBox* m_pIDInputBox;
 	CUITextInputBox* m_pPassInputBox;
+#if(CB_DANGKYINGAME)
+	CButton m_DangKy;
+#endif
 public:
 	CLoginWin();
 	virtual ~CLoginWin();
@@ -78,7 +81,7 @@ protected:
 #ifdef SAVE_ACCOUNT_SYSTEM
 	void OpenAccountTable(bool bVisible);
 	void ReloadAccount(bool reload, bool update, bool save);
+public:
 	void SaveAccount(std::string NameId, std::string PassID);
 #endif // SAVE_ACCOUNT_SYSTEM
 };
-

@@ -46,6 +46,11 @@ void JoinServerProtocolCore(BYTE head, BYTE* lpMsg, int size) // OK
 		case 0x30:
 			JGAccountAlreadyConnectedRecv((SDHP_ACCOUNT_ALREADY_CONNECTED_RECV*)lpMsg);
 			break;
+#if(CB_DANGKYINGAME)
+		case 0x56:
+			JGRegAccountKQ((SDHP_JOIN_SERVER_INFO_RECV*)lpMsg);
+			break;
+#endif
 		}
 
 	PROTECT_FINAL
@@ -564,3 +569,48 @@ void GJServerUserInfoSend() // OK
 
 	PROTECT_FINAL;
 }
+
+#if(CB_DANGKYINGAME)
+void GJSendRegOrLostPass(int aIndex, BYTE typesend, char* account, char* password, char* numcode, char* sodienthoai) // OK
+{
+	PROTECT_START
+
+	if (!CheckChuoiKyTuDacBiet(account) || !CheckChuoiKyTuDacBiet(password))
+	{
+		XULY_CGPACKET pMsg;
+
+		pMsg.header.set(0xD3, 0x05, sizeof(pMsg));
+		pMsg.ThaoTac = eDuLieuNhapKhongDung;
+
+		DataSend(aIndex, (LPBYTE)&pMsg, sizeof(pMsg));
+		return;
+	}
+
+	SDHP_REGISTRO_GS_SEND_JS pMsg;
+
+	pMsg.header.set(0x56, sizeof(pMsg));
+	pMsg.aIndexUser = aIndex;
+	pMsg.TypeSend = typesend;
+	memcpy(pMsg.account, account, sizeof(pMsg.account));
+	memcpy(pMsg.password, password, sizeof(pMsg.password));
+	memcpy(pMsg.numcode, numcode, sizeof(pMsg.numcode));
+	memcpy(pMsg.sodienthoai, sodienthoai, sizeof(pMsg.sodienthoai));
+
+	gJoinServerConnection.DataSend((BYTE*)&pMsg, pMsg.header.size);
+
+	LogAdd(LOG_RED, "GJSendRegOrLostPass Type : %d [%s] [%s] [%s] [%s]", pMsg.TypeSend, pMsg.account, pMsg.password, pMsg.numcode, pMsg.sodienthoai);
+
+	PROTECT_FINAL
+}
+
+void JGRegAccountKQ(SDHP_JOIN_SERVER_INFO_RECV* lpMsg)
+{
+	XULY_CGPACKET pMsg;
+
+	pMsg.header.set(0xD3, 0x05, sizeof(pMsg));
+	pMsg.ThaoTac = lpMsg->result;
+
+	DataSend(lpMsg->ItemCount, (LPBYTE)&pMsg, sizeof(pMsg));
+	LogAdd(LOG_RED, "JGRegAccountKQ %d", lpMsg->result);
+}
+#endif

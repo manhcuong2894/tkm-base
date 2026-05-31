@@ -1823,3 +1823,30 @@ void CGReqGuildMarkOfCastleOwner(PMSG_REQ_GUILDMARK_OF_CASTLEOWNER* aRecv, int i
 void CGReqCastleHuntZoneEntrance(PMSG_REQ_MOVE_TO_CASTLE_HUNTZONE* aRecv, int iIndex);
 
 void CGReqtimeState(PMSG_DATA_PACKAGE* lpMsg, int iIndex);
+
+struct XULY_CGPACKET
+{
+	PSBMSG_HEAD header;
+	DWORD ThaoTac;
+};
+
+#if(CB_DANGKYINGAME)
+struct PMSG_REGISTER_MAIN_SEND
+{
+	PSBMSG_HEAD header;
+	BYTE TypeSend;
+	char account[11];
+	char password[21];
+	char numcode[8];
+	char sodienthoai[14];
+};
+
+enum eRecvKetQua
+{
+	eDangKyThanhCong = 1,
+	eTaiKhoanDaTonTai = 2,
+	eDuLieuNhapKhongDung = 3,
+	eDatLaiMatKhauThanhCong = 11,
+	eThongTinBaoMatKhongChinhXac = 12,
+};
+#endif

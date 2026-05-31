@@ -1072,6 +1072,19 @@ void ProtocolCore(uint8_t head, uint8_t* lpMsg, int size, int aIndex, int encryp
 			break;
 		}
 		break;
+	case 0xD3:
+		switch (((lpMsg[0] == 0xC1) ? lpMsg[3] : lpMsg[4]))
+		{
+#if(CB_DANGKYINGAME)
+		case 0x05:
+		{
+			PMSG_REGISTER_MAIN_SEND* BpMsg = (PMSG_REGISTER_MAIN_SEND*)lpMsg;
+			GJSendRegOrLostPass(aIndex, BpMsg->TypeSend, BpMsg->account, BpMsg->password, BpMsg->numcode, BpMsg->sodienthoai);
+		}
+		break;
+#endif
+		}
+		break;
 	case 0xF6:
 		switch (lpMsg[3])
 		{

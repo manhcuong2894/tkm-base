@@ -6,6 +6,7 @@
 #include "Win.h"
 #include "Input.h"
 #include "Button.h"
+#include "CB_DangKyInGame.h"
 
 CWin::CWin() : m_psprBg(NULL)
 {
@@ -189,6 +190,10 @@ void CWin::Render()
 			m_psprBg->Render();
 
 		RenderControls();
+
+#if(CB_DANGKYINGAME)
+		gCB_DangKyInGame->RenderWindow(0, 0);
+#endif
 	}
 }
 

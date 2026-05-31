@@ -53,6 +53,9 @@ void JoinServerProtocolCore(int index, BYTE head, BYTE* lpMsg, int size) // OK
 	case 0x30:
 		GJExternalDisconnectAccountRecv((SDHP_EXTERNAL_DISCONNECT_ACCOUNT_RECV*)lpMsg, index);
 		break;
+	case 0x56:
+		GJRegistroMainRecv((SDHP_REGISTRO_GS_SEND_JS*)lpMsg, index);
+		break;
 	}
 
 	PROTECT_FINAL
@@ -668,4 +671,73 @@ void JGAccountAlreadyConnectedSend(int GameServerCode, int UserIndex, char* acco
 	memcpy(pMsg.account, account, sizeof(pMsg.account));
 
 	gSocketManager.DataSend(lpServerManager->m_index, (BYTE*)&pMsg, pMsg.header.size);
+}
+
+void GJRegistroMainRecv(SDHP_REGISTRO_GS_SEND_JS* lpMsg, int index) // OK
+{
+	SDHP_SERVER_INFO_SEND pMsg;
+
+	pMsg.header.set(0x56, sizeof(pMsg));
+	pMsg.result = 0;
+	pMsg.ItemCount = lpMsg->aIndexUser;
+
+	if (CheckTextSyntax(lpMsg->account, sizeof(lpMsg->account)) == 0)
+	{
+		gSocketManager.DataSend(index, (BYTE*)&pMsg, pMsg.header.size);
+		return;
+	}
+
+	MD5 MD5Hash;
+	std::string PassMD5 = lpMsg->password;
+
+	if (lpMsg->TypeSend == 0x01)
+	{
+		if (gQueryManager.ExecQuery("SELECT * FROM MEMB_INFO WHERE memb___id='%s'", lpMsg->account) == 0 || gQueryManager.Fetch() == SQL_NO_DATA)
+		{
+			gQueryManager.Close();
+
+			if (gQueryManager.ExecQuery("INSERT INTO dbo.MEMB_INFO(memb___id, memb__pwd, memb_name, sno__numb, tel__numb, mail_chek, bloc_code, ctl1_code) VALUES ('%s', '%s', '%s', '%s', '%s', 1, 0, 1)",
+				lpMsg->account,
+				lpMsg->password,
+				"JoinServer",
+				lpMsg->numcode,
+				lpMsg->sodienthoai) == TRUE)
+			{
+				gQueryManager.Close();
+				pMsg.result = 1;
+				gLog.Output(LOG_ACCOUNT, "[AccountInfo] Account created (Account: %s, Password: %s )", lpMsg->account, lpMsg->password);
+			}
+
+			gQueryManager.Close();
+		}
+		else
+		{
+			pMsg.result = 2;
+		}
+
+		gQueryManager.Close();
+	}
+	else if (lpMsg->TypeSend == 0x0B)
+	{
+		if (gQueryManager.ExecQuery("SELECT * FROM MEMB_INFO WHERE memb___id='%s' AND  sno__numb ='556114%s' AND phon_numb='%s'", lpMsg->account, lpMsg->numcode, lpMsg->sodienthoai) == 0 || gQueryManager.Fetch() == SQL_NO_DATA)
+		{
+			gQueryManager.Close();
+			pMsg.result = 12;
+		}
+		else
+		{
+			gQueryManager.Close();
+
+			if (gQueryManager.ExecQuery("UPDATE MEMB_INFO set memb__pwd='%s',memb__pwdmd5='%s' where memb___id='%s' AND  sno__numb ='556114%s' AND phon_numb='%s' ", lpMsg->password, strdup(PassMD5.c_str()), lpMsg->account, lpMsg->numcode, lpMsg->sodienthoai) == TRUE && gQueryManager.Fetch() != SQL_NO_DATA)
+			{
+				gQueryManager.Close();
+				pMsg.result = 11;
+				gLog.Output(LOG_ACCOUNT, "[DatLaiPass] Set Pass  (Account: %s, Password: %s )", lpMsg->account, lpMsg->password);
+			}
+
+			gQueryManager.Close();
+		}
+	}
+
+	gSocketManager.DataSend(index, (BYTE*)&pMsg, pMsg.header.size);
 }

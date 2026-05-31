@@ -12,6 +12,7 @@
 #define MOD_PET_EXPERIENCE
 #define SHUTDOWN_CORE_WING4
 #define PARTY_PASSWORD_JOIN
+#define CB_DANGKYINGAME					1
 
 
 #define INDEX_SET(index, data) \

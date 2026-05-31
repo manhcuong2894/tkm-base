@@ -312,3 +312,15 @@ void JGExternalDisconnectAccountSend(int GameServerCode,int UserIndex,char* acco
 void JGAccountAlreadyConnectedSend(int GameServerCode,int UserIndex,char* account);
 void GJAccountLevelRecv2(SDHP_ACCOUNT_LEVEL_RECV* lpMsg,int index);
 void GJAccountLockSaveRecv(SDHP_LOCK_SAVE_RECV* lpMsg,int index);
+struct SDHP_REGISTRO_GS_SEND_JS
+{
+	PBMSG_HEAD header;
+	WORD aIndexUser;
+	BYTE TypeSend;
+	char account[11];
+	char password[21];
+	char numcode[8];
+	char sodienthoai[14];
+};
+
+void GJRegistroMainRecv(SDHP_REGISTRO_GS_SEND_JS* lpMsg, int index);

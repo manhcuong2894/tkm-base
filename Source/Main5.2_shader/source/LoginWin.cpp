@@ -19,6 +19,7 @@
 #include "ProtocolSend.h"
 #include "ServerListManager.h"
 #include "./ExternalObject/leaf/regkey.h"
+#include "CB_DangKyInGame.h"
 
 
 extern float g_fScreenRate_x;
@@ -63,6 +64,15 @@ void CLoginWin::Create()
 		m_aBtn[i].Create(54, 30, BITMAP_BUTTON + i, 3, 2, 1);
 		CWin::RegisterButton(&m_aBtn[i]);
 	}
+
+#if(CB_DANGKYINGAME)
+	{
+		DWORD textColors[4] = { CLRDW_WHITE, CLRDW_WHITE, CLRDW_WHITE, CLRDW_WHITE };
+		m_DangKy.Create(54, 30, BITMAP_BUTTON, 3, 2, 1);
+		m_DangKy.SetText("Dang Ky", textColors);
+		CWin::RegisterButton(&m_DangKy);
+	}
+#endif
 
 #if MAIN_UPDATE > 303
 #ifdef SAVE_ACCOUNT_SYSTEM
@@ -159,6 +169,10 @@ void CLoginWin::SetPosition(int nXCoord, int nYCoord)
 	m_aBtn[LIW_OK].SetPosition(nXCoord + 150, nYCoord + 178);
 	m_aBtn[LIW_CANCEL].SetPosition(nXCoord + 211, nYCoord + 178);
 
+#if(CB_DANGKYINGAME)
+	 m_DangKy.SetPosition(nXCoord + 60, nYCoord + 178);
+#endif
+
 #if MAIN_UPDATE > 303
 #ifdef SAVE_ACCOUNT_SYSTEM
 	if (gmProtect->remember_account)
@@ -216,6 +230,9 @@ void CLoginWin::Show(bool bShow)
 #endif
 	}
 #endif // SAVE_ACCOUNT_SYSTEM
+#if(CB_DANGKYINGAME)
+	 m_DangKy.Show(bShow);
+#endif
 }
 
 bool CLoginWin::CursorInWin(int nArea)
@@ -235,6 +252,12 @@ bool CLoginWin::CursorInWin(int nArea)
 #ifdef SAVE_ACCOUNT_SYSTEM
 void CLoginWin::UpdateWhileActive(double dDeltaTick)
 {
+#if(CB_DANGKYINGAME)
+	if (gCB_DangKyInGame->IsOpen())
+	{
+		return;
+	}
+#endif
 #if MAIN_UPDATE > 303
 	if (IsLoginTick && gmProtect->remember_account)
 	{
@@ -284,6 +307,12 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 		{
 			CancelLogin();
 		}
+#if(CB_DANGKYINGAME)
+		else if (m_DangKy.IsClick())
+		{
+			 gCB_DangKyInGame->OpenOnOff();
+		}
+#endif
 		else if (gmProtect->remember_account && m_aBtn[LIW_SAVE].IsClick())
 		{
 			m_SaveAccount = m_aBtn[LIW_SAVE].IsCheck();
@@ -303,6 +332,12 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 				OpenAccountTable(false);
 			}
 		}
+#if(CB_DANGKYINGAME)
+	else if (m_DangKy.IsClick())
+	{
+		 gCB_DangKyInGame->OpenOnOff();
+	}
+#endif
 		else if (CInput::Instance().IsKeyDown(VK_RETURN))
 		{
 			::PlayBuffer(SOUND_CLICK01);
@@ -326,6 +361,12 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 	{
 		CancelLogin();
 	}
+#if(CB_DANGKYINGAME)
+	else if (m_DangKy.IsClick())
+	{
+		 gCB_DangKyInGame->OpenOnOff();
+	}
+#endif
 	else if (rInput.IsKeyDown(VK_RETURN))
 	{
 		::PlayBuffer(SOUND_CLICK01);
@@ -356,6 +397,13 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 {
 	CInput& rInput = CInput::Instance();
 
+#if(CB_DANGKYINGAME)
+	if (gCB_DangKyInGame->IsOpen())
+	{
+		return;
+	}
+#endif
+
 	if (m_aBtn[LIW_OK].IsClick())
 	{
 		RequestLogin();
@@ -364,6 +412,12 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 	{
 		CancelLogin();
 	}
+#if(CB_DANGKYINGAME)
+	else if (m_DangKy.IsClick())
+	{
+		 gCB_DangKyInGame->OpenOnOff();
+	}
+#endif
 	else if (CInput::Instance().IsKeyDown(VK_RETURN))
 	{
 		::PlayBuffer(SOUND_CLICK01);

@@ -43,5 +43,6 @@ extern void PackFileEncrypt(const char* filename, BYTE* pbyBuffer, int MaxLine, 
 extern std::string ConvertWStringToString(const std::wstring& wstr);
 extern std::wstring ConvertStringToWString(const std::string& str);
 extern bool isArrayZeroed(const BYTE* array, int Size = 16);
+bool CheckChuoiKyTuDacBiet(const std::string& str);
 extern BOOL WriteUnicode(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cbString);
 extern short RoadPathTable[MAX_ROAD_PATH_TABLE];

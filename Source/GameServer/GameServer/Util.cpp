@@ -885,3 +885,17 @@ BOOL WriteUnicode(HDC hdc, int nXStart, int nYStart, LPCSTR lpString, int cbStri
 
 	return TextOutW(hdc, nXStart, nYStart, wstrText.c_str(), wstrText.length());
 }
+bool CheckChuoiKyTuDacBiet(const std::string& str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		const char ch = str[i];
+
+		if (!isdigit((unsigned char)ch) && !(ch >= 'a' && ch <= 'z') && !(ch >= 'A' && ch <= 'Z'))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}

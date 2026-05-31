@@ -229,6 +229,7 @@
     <ClCompile Include="BoneManager.cpp" />
     <ClCompile Include="Builder.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="CB_DangKyInGame.cpp" />
     <ClCompile Include="CAIController.cpp" />
     <ClCompile Include="CameraManager.cpp" />
     <ClCompile Include="CameraMove.cpp" />
@@ -682,6 +683,7 @@
     <ClInclude Include="BoneManager.h" />
     <ClInclude Include="Builder.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="CB_DangKyInGame.h" />
     <ClInclude Include="CAIController.h" />
     <ClInclude Include="CameraManager.h" />
     <ClInclude Include="CameraMove.h" />
