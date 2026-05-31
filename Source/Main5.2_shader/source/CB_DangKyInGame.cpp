@@ -7,11 +7,11 @@
 #include "CBTMessageBox.h"
 #include "DSPlaySound.h"
 #include "NewUISystem.h"
-#include "ProtocolSend.h"
 #include "UIBaseDef.h"
 #include "UIControls.h"
 #include "UIMng.h"
 #include "ZzzInterface.h"
+#include "wsclientinline.h"
 
 using namespace SEASON3B;
 
@@ -201,7 +201,7 @@ bool CB_DangKyInGame::HandleConfirmSubmit()
 
 	if (!this->CheckCaptcha(captcha))
 	{
-		leaf::CBTMessageBox(g_hWnd, "Sai ma Captcha", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Sai ma Captcha", "Dang ky tai khoan", MB_OK, true);
 		this->ResetCaptcha();
 		return false;
 	}
@@ -332,37 +332,37 @@ bool CB_DangKyInGame::RequsetDKTK()
 
 	if (this->TimeSendRegTK > GetTickCount())
 	{
-		leaf::CBTMessageBox(g_hWnd, "Thao tac cham lai.", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Thao tac cham lai.", "Dang ky tai khoan", MB_OK, true);
 		return false;
 	}
 
 	if (strlen(szID) < 1)
 	{
-		leaf::CBTMessageBox(g_hWnd, "Vui long nhap tai khoan.", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap tai khoan.", "Dang ky tai khoan", MB_OK, true);
 		return false;
 	}
 
 	if (strlen(szPass) < 1)
 	{
-		leaf::CBTMessageBox(g_hWnd, "Vui long nhap mat khau.", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap mat khau.", "Dang ky tai khoan", MB_OK, true);
 		return false;
 	}
 
 	if (strlen(szSno) < 7)
 	{
-		leaf::CBTMessageBox(g_hWnd, "Vui long nhap 7 so bao mat.", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap 7 so bao mat.", "Dang ky tai khoan", MB_OK, true);
 		return false;
 	}
 
 	if (strlen(szSDT) < 10)
 	{
-		leaf::CBTMessageBox(g_hWnd, "Vui long nhap so dien thoai.", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap so dien thoai.", "Dang ky tai khoan", MB_OK, true);
 		return false;
 	}
 
 	if (!CheckChuoiKyTuDacBiet(szID) || !CheckChuoiKyTuDacBiet(szPass))
 	{
-		leaf::CBTMessageBox(g_hWnd, "Tai khoan hoac mat khau co ky tu khong hop le.", "Dang ky tai khoan", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Tai khoan hoac mat khau co ky tu khong hop le.", "Dang ky tai khoan", MB_OK, true);
 		return false;
 	}
 
@@ -408,7 +408,7 @@ void CB_DangKyInGame::RecvKQRegInGame(XULY_CGPACKET* lpMsg)
 	{
 		char message[128] = { 0 };
 		sprintf_s(message, "Dang ky thanh cong.\nID: %s", szID);
-		leaf::CBTMessageBox(g_hWnd, message, "Ket qua", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), message, "Ket qua", MB_OK, true);
 
 		CUIMng& rUIMng = CUIMng::Instance();
 		rUIMng.m_LoginWin.GetIDInputBox()->SetText(szID);
@@ -425,13 +425,13 @@ void CB_DangKyInGame::RecvKQRegInGame(XULY_CGPACKET* lpMsg)
 	}
 	break;
 	case CB_DangKyInGame::eTaiKhoanDaTonTai:
-		leaf::CBTMessageBox(g_hWnd, "Tai khoan da ton tai.", "Ket qua", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Tai khoan da ton tai.", "Ket qua", MB_OK, true);
 		break;
 	case CB_DangKyInGame::eDuLieuNhapKhongDung:
-		leaf::CBTMessageBox(g_hWnd, "Thong tin nhap khong phu hop.", "Ket qua", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Thong tin nhap khong phu hop.", "Ket qua", MB_OK, true);
 		break;
 	default:
-		leaf::CBTMessageBox(g_hWnd, "Khong the dang ky tai khoan.", "Ket qua", MB_OK, true);
+		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Khong the dang ky tai khoan.", "Ket qua", MB_OK, true);
 		break;
 	}
 }
