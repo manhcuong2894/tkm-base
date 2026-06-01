@@ -554,7 +554,7 @@ void CLoginWin::RenderControls()
 			{
 				m_pIDInputBox->SetText(stAccountMacro[i].NameId.c_str());
 				m_pPassInputBox->SetText(stAccountMacro[i].PassID.c_str());
-				RequestLogin(false);
+				RequestLogin(true);
 				return;
 			}
 			else if(rInput.IsRBtnUp())
