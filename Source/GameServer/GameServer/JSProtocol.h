@@ -215,9 +215,9 @@ void GJServerUserInfoSend();
 void GJAccountLockSaveSend(int aIndex,int Lock);
 void GJAccountServerInfoSend(int aIndex, int AccountLevel, char* AccountExpireDate, int Lock );
 #if(CB_DANGKYINGAME)
-struct SDHP_REGISTER_MAIN_SEND_DS
+struct SDHP_REGISTRO_GS_SEND_JS
 {
-	PSBMSG_HEAD header;
+	PBMSG_HEAD header;
 	WORD aIndexUser;
 	BYTE TypeSend;
 	char account[11];

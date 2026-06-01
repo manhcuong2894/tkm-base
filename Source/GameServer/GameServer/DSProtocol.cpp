@@ -625,14 +625,6 @@ void DataServerProtocolCore(BYTE HeadCode, BYTE* ReceiveBuffer, int Size) // OK
 		case 0xF1:
 			gCustomQuest.DGCustomQuestRecv((SDHP_CUSTOMQUEST_RECV*)ReceiveBuffer);
 			break;
-		case 0xD3:
-			switch (((ReceiveBuffer[0] == 0xC1) ? ReceiveBuffer[3] : ReceiveBuffer[4]))
-			{
-			case 0x05:
-				DGRegAccountKQ((SDHP_REGISTER_MAIN_RECV*)ReceiveBuffer);
-				break;
-			}
-			break;
 		case 0xF4:
 			gCustomRanking.GDCustomRankingRecv(ReceiveBuffer);
 			break;
@@ -663,22 +655,6 @@ void DataServerProtocolCore(BYTE HeadCode, BYTE* ReceiveBuffer, int Size) // OK
 		}
 
 	PROTECT_FINAL
-}
-
-void DGRegAccountKQ(SDHP_REGISTER_MAIN_RECV* lpMsg)
-{
-	if (lpMsg == 0)
-	{
-		return;
-	}
-
-	XULY_CGPACKET pMsg;
-
-	pMsg.header.set(0xD3, 0x05, sizeof(pMsg));
-	pMsg.ThaoTac = lpMsg->result;
-
-	DataSend(lpMsg->aIndexUser, (LPBYTE)&pMsg, sizeof(pMsg));
-	LogAdd(LOG_RED, "DGRegAccountKQ %d", lpMsg->result);
 }
 
 void DGServerInfoRecv(SDHP_DATA_SERVER_INFO_RECV* lpMsg) // OK
