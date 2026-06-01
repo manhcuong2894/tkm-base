@@ -145,6 +145,14 @@ void CLoginWin::Create()
 	m_pPassInputBox->SetTabTarget(m_pIDInputBox);
 
 	FirstLoad = TRUE;
+
+#ifdef SAVE_ACCOUNT_SYSTEM
+	if (gmProtect->remember_account && !stAccountMacro.empty())
+	{
+		m_pIDInputBox->SetText(stAccountMacro[0].NameId.c_str());
+		m_pPassInputBox->SetText(stAccountMacro[0].PassID.c_str());
+	}
+#endif // SAVE_ACCOUNT_SYSTEM
 }
 
 void CLoginWin::PreRelease()
@@ -291,7 +299,7 @@ void CLoginWin::UpdateWhileActive(double dDeltaTick)
 				{
 					m_pIDInputBox->SetText(stAccountMacro[i].NameId.c_str());
 					m_pPassInputBox->SetText(stAccountMacro[i].PassID.c_str());
-					RequestLogin(false);
+					RequestLogin(true);
 					return;
 				}
 			}
