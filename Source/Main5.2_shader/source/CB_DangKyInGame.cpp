@@ -71,6 +71,7 @@ void CB_DangKyInGame::Clear()
 	this->ButtonClickTime = 0;
 	this->OpenDKTK = false;
 	this->EnterPressed = false;
+	this->SubmitPending = false;
 	this->MsgBoxOpen = false;
 	this->MsgCloseRegister = false;
 	this->MsgLine = 1;
@@ -87,6 +88,7 @@ void CB_DangKyInGame::Close()
 {
 	this->OpenDKTK = false;
 	this->EnterPressed = false;
+	this->SubmitPending = false;
 	this->MsgBoxOpen = false;
 	this->MsgCloseRegister = false;
 
@@ -257,7 +259,7 @@ bool CB_DangKyInGame::DrawButton(float x, float y, float w, float h, const char*
 
 	this->DrawBar(x, y, w, h, hover ? 0.42f : 0.22f, hover ? 0.22f : 0.12f, 0.05f, 0.88f);
 
-	if (hover && (GetKeyState(VK_LBUTTON) & 0x8000) && GetTickCount() - this->ButtonClickTime > 500)
+	if (hover && SEASON3B::IsRelease(VK_LBUTTON) && GetTickCount() - this->ButtonClickTime > 500)
 	{
 		this->ButtonClickTime = GetTickCount();
 		PlayBuffer(SOUND_CLICK01);
@@ -330,6 +332,7 @@ void CB_DangKyInGame::OpenOnOff()
 
 	if (this->OpenDKTK)
 	{
+		this->SubmitPending = false;
 		this->ResetCaptcha();
 	}
 	else
@@ -397,6 +400,12 @@ bool CB_DangKyInGame::RenderWindow(int X, int Y)
 	this->DrawText(g_hFontBold, startX + 108.0f, inputY + 5.0f, 0xFFFFFFB8, 50, RT3_SORT_CENTER, "%s", this->Captcha.c_str());
 	this->RenderInput(startX + 166.0f, inputY + 3.0f, 50.0f, 14.0f, this->CInputCaptCha, UIOPTION_NUMBERONLY, 4, false);
 
+	if (this->SubmitPending && this->TimeSendRegTK <= GetTickCount())
+	{
+		this->SubmitPending = false;
+		this->OpenMessageBox(false, "Ket Qua", "Khong nhan duoc phan hoi tu may chu, vui long thu lai.");
+	}
+
 	if (this->DrawMessageBox())
 	{
 		return true;
@@ -417,7 +426,11 @@ bool CB_DangKyInGame::RenderWindow(int X, int Y)
 		this->EnterPressed = false;
 	}
 
-	if (this->DrawButton(startX + 86.0f, startY + 218.0f, 90.0f, 18.0f, "Xac nhan") || submitByEnter)
+	if (this->SubmitPending)
+	{
+		this->DrawText(g_hFont, startX, startY + 218.0f, 0xFFFFFFB8, (int)windowW, RT3_SORT_CENTER, "Dang xu ly...");
+	}
+	else if (this->DrawButton(startX + 86.0f, startY + 218.0f, 90.0f, 18.0f, "Xac nhan") || submitByEnter)
 	{
 		this->HandleConfirmSubmit();
 	}
@@ -494,8 +507,8 @@ bool CB_DangKyInGame::RequsetDKTK()
 
 	DataSend((uint8_t*)&pMsg, pMsg.header.Size);
 
-	this->ResetCaptcha();
 	this->TimeSendRegTK = GetTickCount() + 5000;
+	this->SubmitPending = true;
 	return true;
 }
 
@@ -505,6 +518,9 @@ void CB_DangKyInGame::RecvKQRegInGame(XULY_CGPACKET* lpMsg)
 	{
 		return;
 	}
+
+	this->SubmitPending = false;
+	this->ResetCaptcha();
 
 	char szID[MAX_ID_SIZE + 1] = { 0 };
 	char szPass[MAX_PASSWORD_SIZE + 1] = { 0 };

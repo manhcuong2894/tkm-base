@@ -74,6 +74,7 @@ private:
 	DWORD ButtonClickTime;
 	bool OpenDKTK;
 	bool EnterPressed;
+	bool SubmitPending;
 	bool MsgBoxOpen;
 	bool MsgCloseRegister;
 	int MsgLine;
