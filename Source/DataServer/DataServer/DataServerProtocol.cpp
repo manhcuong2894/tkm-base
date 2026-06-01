@@ -837,6 +837,14 @@ void DataServerProtocolCore(int index, BYTE head, BYTE* lpMsg, int size) // OK
 	case 0xF3:
 		GDSetCoinRecv((SDHP_SETCOIN_RECV*)lpMsg);
 		break;
+	case 0xD3:
+		switch (((lpMsg[0] == 0xC1) ? lpMsg[3] : lpMsg[4]))
+		{
+		case 0x05:
+			GDRegistroMainRecv((SDHP_REGISTER_MAIN_RECV*)lpMsg, index);
+			break;
+		}
+		break;
 	case 0xF4:
 		switch (((lpMsg[0] == 0xC1) ? lpMsg[3] : lpMsg[4]))
 		{
@@ -3253,6 +3261,54 @@ void GDSetCoinRecv(SDHP_SETCOIN_RECV* lpMsg) // OK
 	gQueryManager.ExecQuery("EXEC WZ_SetCoin '%s','%s','%d','%d','%d'", lpMsg->account, lpMsg->name, lpMsg->value1, lpMsg->value2, lpMsg->value3);
 	gQueryManager.Fetch();
 	gQueryManager.Close();
+}
+
+void GDRegistroMainRecv(SDHP_REGISTER_MAIN_RECV* lpMsg, int index)
+{
+	SDHP_REGISTER_MAIN_SEND pMsg;
+
+	pMsg.header.set(0xD3, 0x05, sizeof(pMsg));
+	pMsg.aIndexUser = lpMsg->aIndexUser;
+	pMsg.result = 0;
+
+	if (CheckTextSyntax(lpMsg->account, sizeof(lpMsg->account)) == 0 || CheckTextSyntax(lpMsg->password, sizeof(lpMsg->password)) == 0)
+	{
+		pMsg.result = 3;
+		gSocketManager.DataSend(index, (BYTE*)&pMsg, pMsg.header.size);
+		return;
+	}
+
+	if (lpMsg->TypeSend == 0x01)
+	{
+		if (gQueryManager.ExecQuery("SELECT * FROM MEMB_INFO WHERE memb___id='%s'", lpMsg->account) == 0 || gQueryManager.Fetch() == SQL_NO_DATA)
+		{
+			gQueryManager.Close();
+
+			if (gQueryManager.ExecQuery("INSERT INTO dbo.MEMB_INFO(memb___id, memb__pwd, memb_name, sno__numb, tel__numb, mail_chek, bloc_code, ctl1_code) VALUES ('%s', '%s', '%s', '%s', '%s', 1, 0, 1)",
+				lpMsg->account,
+				lpMsg->password,
+				"DataServer",
+				lpMsg->numcode,
+				lpMsg->sodienthoai) == TRUE)
+			{
+				pMsg.result = 1;
+				LogAdd(LOG_BLACK, "[AccountInfo] Account created (Account: %s)", lpMsg->account);
+			}
+
+			gQueryManager.Close();
+		}
+		else
+		{
+			pMsg.result = 2;
+			gQueryManager.Close();
+		}
+	}
+	else
+	{
+		pMsg.result = 3;
+	}
+
+	gSocketManager.DataSend(index, (BYTE*)&pMsg, pMsg.header.size);
 }
 
 void GDCustomRankingRecv(SDHP_CUSTOM_RANKING_RECV* lpMsg, int index) // OK

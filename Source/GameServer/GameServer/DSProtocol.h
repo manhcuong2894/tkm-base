@@ -18,6 +18,13 @@ struct SDHP_DATA_SERVER_INFO_RECV
 	DWORD ItemCount;
 };
 
+struct SDHP_REGISTER_MAIN_RECV
+{
+	PSBMSG_HEAD header; // C1:D3:05
+	WORD aIndexUser;
+	DWORD result;
+};
+
 struct SDHP_CHARACTER_LIST_RECV
 {
 	PWMSG_HEAD header; // C2:01
@@ -1386,3 +1393,4 @@ void GS_DGAnsCsGulidUnionInfo(LPBYTE lpRecv);
 void GS_DGAnsCsSaveTotalGuildInfo(LPBYTE lpRecv);
 void GS_DGAnsCsLoadTotalGuildInfo(LPBYTE lpRecv);
 void GS_DGAnsCastleNpcUpdate(LPBYTE lpRecv);
+void DGRegAccountKQ(SDHP_REGISTER_MAIN_RECV* lpMsg);

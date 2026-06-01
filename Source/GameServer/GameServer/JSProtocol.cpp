@@ -586,9 +586,9 @@ void GJSendRegOrLostPass(int aIndex, BYTE typesend, char* account, char* passwor
 		return;
 	}
 
-	SDHP_REGISTRO_GS_SEND_JS pMsg;
+	SDHP_REGISTER_MAIN_SEND_DS pMsg;
 
-	pMsg.header.set(0x56, sizeof(pMsg));
+	pMsg.header.set(0xD3, 0x05, sizeof(pMsg));
 	pMsg.aIndexUser = aIndex;
 	pMsg.TypeSend = typesend;
 	memcpy(pMsg.account, account, sizeof(pMsg.account));
@@ -596,9 +596,18 @@ void GJSendRegOrLostPass(int aIndex, BYTE typesend, char* account, char* passwor
 	memcpy(pMsg.numcode, numcode, sizeof(pMsg.numcode));
 	memcpy(pMsg.sodienthoai, sodienthoai, sizeof(pMsg.sodienthoai));
 
-	gJoinServerConnection.DataSend((BYTE*)&pMsg, pMsg.header.size);
+	if (gDataServerConnection.DataSend((BYTE*)&pMsg, pMsg.header.size) == 0)
+	{
+		XULY_CGPACKET result;
 
-	LogAdd(LOG_RED, "GJSendRegOrLostPass Type : %d [%s] [%s] [%s] [%s]", pMsg.TypeSend, pMsg.account, pMsg.password, pMsg.numcode, pMsg.sodienthoai);
+		result.header.set(0xD3, 0x05, sizeof(result));
+		result.ThaoTac = eDuLieuNhapKhongDung;
+
+		DataSend(aIndex, (LPBYTE)&result, sizeof(result));
+		return;
+	}
+
+	LogAdd(LOG_RED, "GDSendRegOrLostPass Type : %d [%s] [%s] [%s] [%s]", pMsg.TypeSend, pMsg.account, pMsg.password, pMsg.numcode, pMsg.sodienthoai);
 
 	PROTECT_FINAL
 }

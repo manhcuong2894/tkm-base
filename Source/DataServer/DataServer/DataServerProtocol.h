@@ -653,6 +653,24 @@ struct SDHP_SERVER_INFO_SEND
 	DWORD ItemCount;
 };
 
+struct SDHP_REGISTER_MAIN_RECV
+{
+	PSBMSG_HEAD header; // C1:D3:05
+	WORD aIndexUser;
+	BYTE TypeSend;
+	char account[11];
+	char password[21];
+	char numcode[8];
+	char sodienthoai[14];
+};
+
+struct SDHP_REGISTER_MAIN_SEND
+{
+	PSBMSG_HEAD header; // C1:D3:05
+	WORD aIndexUser;
+	DWORD result;
+};
+
 struct SDHP_CHARACTER_LIST_SEND
 {
 	PWMSG_HEAD header; // C2:01
@@ -1014,6 +1032,7 @@ void GDCustomNpcQuestSaveRecv(SDHP_CUSTOMNPCQUEST_SAVE_RECV* lpMsg);
 void GDCustomNpcQuestRecv(SDHP_CUSTOMNPCQUEST_RECV* lpMsg, int index);
 void GDCustomNpcQuestMonsterCountSaveRecv(SDHP_CUSTOMNPCQUESTMONSTERSAVE_RECV* lpMsg);
 void GDStartItemSaveRecv(SDHP_STARTITEM_SAVE_RECV* lpMsg);
+void GDRegistroMainRecv(SDHP_REGISTER_MAIN_RECV* lpMsg, int index);
 
 //**************************************************************************//
 // RAW FUNCTIONS ***********************************************************//
