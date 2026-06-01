@@ -499,23 +499,6 @@ void CLoginWin::RenderControls()
 
 	CWin::RenderButtons();
 
-#if(CB_DANGKYINGAME)
-	// Render fallback register button so it remains visible with all login skins.
-	{
-		float regX = (float)(CWin::GetXPos() + 90);
-		float regY = (float)(CWin::GetYPos() + 178);
-		EnableAlphaTest(true);
-		glColor4f(0.10f, 0.06f, 0.02f, 0.85f);
-		RenderColor(regX, regY, 54.0f, 24.0f, 0.0f, 0);
-		EndRenderColor();
-		glColor3f(1.0f, 1.0f, 1.0f);
-		g_pRenderText->SetBgColor(0);
-		g_pRenderText->SetFont(g_hFixFont);
-		g_pRenderText->SetTextColor(CLRDW_WHITE);
-		g_pRenderText->RenderText(int(regX / g_fScreenRate_x), int((regY + 8.0f) / g_fScreenRate_y), "Dang Ky", int(54.0f / g_fScreenRate_x), 0, RT3_SORT_CENTER);
-		EnableAlphaTest(false);
-	}
-#endif
 
 	m_pIDInputBox->Render();
 	m_pPassInputBox->Render();
