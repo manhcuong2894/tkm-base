@@ -2383,12 +2383,16 @@ void DataSend(uint8_t* byData, uint32_t size) // OK
 {
 	CStreamPacketEngine spe;
 
-	spe.Init(byData[0], byData[1]);
-
-	if (byData[0] == 0xC1 || byData[0] == 0xC3)
-		spe.AddData(&byData[3], (size - 3), FALSE);
-	else
+	if (byData[0] == 0xC2 || byData[0] == 0xC4)
+	{
+		spe.Init(0xC2, byData[3]);
 		spe.AddData(&byData[4], (size - 4), FALSE);
+	}
+	else
+	{
+		spe.Init(0xC1, byData[2]);
+		spe.AddData(&byData[3], (size - 3), FALSE);
+	}
 
 	spe.Send((byData[0] == 0xC3 || byData[0] == 0xC4));
 }
