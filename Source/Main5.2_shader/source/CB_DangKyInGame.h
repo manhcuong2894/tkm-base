@@ -71,6 +71,7 @@ private:
 	CUITextInputBox* CInputData[TYPE_INPUT_DKTK::eMaxINPUT];
 	CUITextInputBox* CInputCaptCha;
 	DWORD TimeSendRegTK;
+	DWORD ButtonClickTime;
 	bool OpenDKTK;
 	bool EnterPressed;
 	bool MsgBoxOpen;

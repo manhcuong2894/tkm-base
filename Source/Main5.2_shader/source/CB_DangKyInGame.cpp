@@ -68,6 +68,7 @@ void CB_DangKyInGame::Clear()
 
 	CInputCaptCha = NULL;
 	this->TimeSendRegTK = GetTickCount();
+	this->ButtonClickTime = 0;
 	this->OpenDKTK = false;
 	this->EnterPressed = false;
 	this->MsgBoxOpen = false;
@@ -256,8 +257,9 @@ bool CB_DangKyInGame::DrawButton(float x, float y, float w, float h, const char*
 
 	this->DrawBar(x, y, w, h, hover ? 0.42f : 0.22f, hover ? 0.22f : 0.12f, 0.05f, 0.88f);
 
-	if (hover && SEASON3B::IsRelease(VK_LBUTTON))
+	if (hover && (GetKeyState(VK_LBUTTON) & 0x8000) && GetTickCount() - this->ButtonClickTime > 500)
 	{
+		this->ButtonClickTime = GetTickCount();
 		PlayBuffer(SOUND_CLICK01);
 		click = true;
 	}
@@ -316,7 +318,6 @@ bool CB_DangKyInGame::HandleConfirmSubmit()
 	if (!this->CheckCaptcha(captcha))
 	{
 		this->OpenMessageBox(false, "Error", "Sai Ma Captcha");
-		this->ResetCaptcha();
 		return false;
 	}
 
