@@ -4,7 +4,6 @@
 #include <cctype>
 #include <ctime>
 
-#include "CBTMessageBox.h"
 #include "DSPlaySound.h"
 #include "NewUISystem.h"
 #include "UIBaseDef.h"
@@ -71,6 +70,11 @@ void CB_DangKyInGame::Clear()
 	this->TimeSendRegTK = GetTickCount();
 	this->OpenDKTK = false;
 	this->EnterPressed = false;
+	this->MsgBoxOpen = false;
+	this->MsgCloseRegister = false;
+	this->MsgLine = 1;
+	this->MsgBoxCaption.clear();
+	this->MsgBoxText.clear();
 }
 
 bool CB_DangKyInGame::IsOpen() const
@@ -82,6 +86,8 @@ void CB_DangKyInGame::Close()
 {
 	this->OpenDKTK = false;
 	this->EnterPressed = false;
+	this->MsgBoxOpen = false;
+	this->MsgCloseRegister = false;
 
 	for (int i = 0; i < TYPE_INPUT_DKTK::eMaxINPUT; i++)
 	{
@@ -118,6 +124,97 @@ void CB_DangKyInGame::ResetCaptcha()
 	{
 		this->CInputCaptCha->SetText("");
 	}
+}
+
+void CB_DangKyInGame::OpenMessageBox(bool closeRegister, const char* caption, const char* text, ...)
+{
+	if (this->MsgBoxOpen)
+	{
+		return;
+	}
+
+	char buff[1024] = { 0 };
+	va_list args;
+	va_start(args, text);
+	vsprintf_s(buff, text, args);
+	va_end(args);
+
+	this->MsgBoxOpen = true;
+	this->MsgCloseRegister = closeRegister;
+	this->MsgLine = 1;
+	this->MsgBoxCaption = caption ? caption : "";
+	this->MsgBoxText = buff;
+
+	for (const char* current = buff; *current != 0; current++)
+	{
+		if (*current == '\n')
+		{
+			this->MsgLine++;
+		}
+	}
+}
+
+bool CB_DangKyInGame::DrawMessageBox()
+{
+	if (!this->MsgBoxOpen)
+	{
+		return false;
+	}
+
+	if (SEASON3B::IsRelease(VK_ESCAPE))
+	{
+		this->MsgBoxOpen = false;
+		this->MsgCloseRegister = false;
+		return true;
+	}
+
+	float boxW = 220.0f;
+	float boxH = 80.0f + (float)(this->MsgLine * 10);
+	float startX = (640.0f * 0.5f) - (boxW * 0.5f);
+	float startY = 15.0f;
+
+	window_backmsg(startX, startY, boxW, boxH);
+	this->DrawText(g_hFontBold, startX, startY + 11.0f, 0xFFFFFFFF, (int)boxW, RT3_SORT_CENTER, this->MsgBoxCaption.c_str());
+
+	float textY = startY + 35.0f;
+	size_t begin = 0;
+	int lineCount = 0;
+
+	while (begin <= this->MsgBoxText.length())
+	{
+		size_t end = this->MsgBoxText.find('\n', begin);
+		std::string line = this->MsgBoxText.substr(begin, end == std::string::npos ? std::string::npos : end - begin);
+		this->DrawText(g_hFont, startX, textY + (lineCount * 12.0f), 0xFFFFFFFF, (int)boxW, RT3_SORT_CENTER, line.c_str());
+		lineCount++;
+
+		if (end == std::string::npos)
+		{
+			break;
+		}
+
+		begin = end + 1;
+	}
+
+	const float btnW = 120.0f;
+	if (this->DrawButton(startX + (boxW - btnW) * 0.5f, startY + boxH - 30.0f, btnW, 12.0f, "OK"))
+	{
+		const bool closeRegister = this->MsgCloseRegister;
+		this->MsgBoxOpen = false;
+		this->MsgCloseRegister = false;
+
+		if (closeRegister)
+		{
+			this->Close();
+		}
+	}
+
+	MouseLButton = false;
+	MouseLButtonPush = false;
+	MouseLButtonPop = false;
+	MouseRButton = false;
+	MouseRButtonPush = false;
+	MouseRButtonPop = false;
+	return true;
 }
 
 void CB_DangKyInGame::DrawBar(float x, float y, float w, float h, float r, float g, float b, float a)
@@ -218,7 +315,7 @@ bool CB_DangKyInGame::HandleConfirmSubmit()
 
 	if (!this->CheckCaptcha(captcha))
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Sai ma Captcha", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Sai Ma Captcha");
 		this->ResetCaptcha();
 		return false;
 	}
@@ -299,6 +396,11 @@ bool CB_DangKyInGame::RenderWindow(int X, int Y)
 	this->DrawText(g_hFontBold, startX + 108.0f, inputY + 5.0f, 0xFFFFFFB8, 50, RT3_SORT_CENTER, "%s", this->Captcha.c_str());
 	this->RenderInput(startX + 166.0f, inputY + 3.0f, 50.0f, 14.0f, this->CInputCaptCha, UIOPTION_NUMBERONLY, 4, false);
 
+	if (this->DrawMessageBox())
+	{
+		return true;
+	}
+
 	bool submitByEnter = false;
 
 	if ((GetKeyState(VK_RETURN) & 0x8000) != 0)
@@ -346,37 +448,37 @@ bool CB_DangKyInGame::RequsetDKTK()
 
 	if (this->TimeSendRegTK > GetTickCount())
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Thao tac cham lai.", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Thao tac cham lai !!");
 		return false;
 	}
 
 	if (strlen(szID) < 1)
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap tai khoan.", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Vui long nhap Tai Khoan");
 		return false;
 	}
 
 	if (strlen(szPass) < 1)
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap mat khau.", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Vui long nhap Mat Khau");
 		return false;
 	}
 
 	if (strlen(szSno) < 7)
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap 7 so bao mat.", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Vui long nhap 7 so bao mat");
 		return false;
 	}
 
 	if (strlen(szSDT) < 10)
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Vui long nhap so dien thoai.", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Vui long nhap So dien thoai");
 		return false;
 	}
 
 	if (!CheckChuoiKyTuDacBiet(szID) || !CheckChuoiKyTuDacBiet(szPass))
 	{
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Tai khoan hoac mat khau co ky tu khong hop le.", "Dang ky tai khoan", MB_OK, true);
+		this->OpenMessageBox(false, "Error", "Tai khoan khong duoc chua ky tu dac biet");
 		return false;
 	}
 
@@ -420,10 +522,6 @@ void CB_DangKyInGame::RecvKQRegInGame(XULY_CGPACKET* lpMsg)
 	{
 	case CB_DangKyInGame::eDangKyThanhCong:
 	{
-		char message[128] = { 0 };
-		sprintf_s(message, "Dang ky thanh cong.\nID: %s", szID);
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), message, "Ket qua", MB_OK, true);
-
 		CUIMng& rUIMng = CUIMng::Instance();
 		rUIMng.m_LoginWin.GetIDInputBox()->SetText(szID);
 		rUIMng.m_LoginWin.GetPassInputBox()->SetText(szPass);
@@ -435,17 +533,17 @@ void CB_DangKyInGame::RecvKQRegInGame(XULY_CGPACKET* lpMsg)
 		}
 #endif
 
-		this->Close();
+		this->OpenMessageBox(true, "Ket Qua", "Chuc mung ban da dang ky thanh cong !\nID : %s", szID);
 	}
 	break;
 	case CB_DangKyInGame::eTaiKhoanDaTonTai:
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Tai khoan da ton tai.", "Ket qua", MB_OK, true);
+		this->OpenMessageBox(false, "Ket Qua", "ID : %s\nDa ton tai vui long dang ky TK khac!", szID);
 		break;
 	case CB_DangKyInGame::eDuLieuNhapKhongDung:
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Thong tin nhap khong phu hop.", "Ket qua", MB_OK, true);
+		this->OpenMessageBox(false, "Ket Qua", "Thong tin nhap khong phu hop, kiem tra lai!");
 		break;
 	default:
-		leaf::CBTMessageBox(gwinhandle->GethWnd(), "Khong the dang ky tai khoan.", "Ket qua", MB_OK, true);
+		this->OpenMessageBox(false, "Ket Qua", "Khong the dang ky tai khoan.");
 		break;
 	}
 }

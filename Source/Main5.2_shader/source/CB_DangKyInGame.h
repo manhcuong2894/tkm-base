@@ -60,6 +60,8 @@ public:
 private:
 	void Close();
 	void ResetCaptcha();
+	void OpenMessageBox(bool closeRegister, const char* caption, const char* text, ...);
+	bool DrawMessageBox();
 	bool DrawButton(float x, float y, float w, float h, const char* text);
 	void DrawText(HFONT font, float x, float y, DWORD color, int width, int align, const char* text, ...);
 	void DrawBar(float x, float y, float w, float h, float r, float g, float b, float a);
@@ -71,7 +73,12 @@ private:
 	DWORD TimeSendRegTK;
 	bool OpenDKTK;
 	bool EnterPressed;
+	bool MsgBoxOpen;
+	bool MsgCloseRegister;
+	int MsgLine;
 	std::string Captcha;
+	std::string MsgBoxCaption;
+	std::string MsgBoxText;
 };
 
 #define gCB_DangKyInGame (CB_DangKyInGame::Instance())
