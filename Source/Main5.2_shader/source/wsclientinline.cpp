@@ -2385,14 +2385,20 @@ void DataSend(uint8_t* byData, uint32_t size) // OK
 
 	if (byData[0] == 0xC2 || byData[0] == 0xC4)
 	{
-		spe.Init(0xC2, byData[3]);
-		spe.AddData(&byData[4], (size - 4), FALSE);
+		spe.Init(byData[0], byData[3]);
+		for (uint32_t n = 4; n < size; n++)
+		{
+			spe << byData[n];
+		}
 	}
 	else
 	{
-		spe.Init(0xC1, byData[2]);
-		spe.AddData(&byData[3], (size - 3), FALSE);
+		spe.Init(byData[0], byData[2]);
+		for (uint32_t n = 3; n < size; n++)
+		{
+			spe << byData[n];
+		}
 	}
 
-	spe.Send((byData[0] == 0xC3 || byData[0] == 0xC4));
+	spe.Send();
 }
