@@ -66,7 +66,7 @@ private:
 	void DrawText(HFONT font, float x, float y, DWORD color, int width, int align, const char* text, ...);
 	void DrawBar(float x, float y, float w, float h, float r, float g, float b, float a);
 	bool RenderInput(float x, float y, float w, float h, CUITextInputBox*& input, UIOPTIONS option, int maxChar, bool isPass);
-	bool CheckCaptcha() const;
+	bool CheckCaptcha(const char* input) const;
 
 	CUITextInputBox* CInputData[TYPE_INPUT_DKTK::eMaxINPUT];
 	CUITextInputBox* CInputCaptCha;

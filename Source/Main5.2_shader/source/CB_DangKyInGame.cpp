@@ -35,31 +35,6 @@ namespace
 
 		return true;
 	}
-
-	std::string ReadNumberInputText(CUITextInputBox* input)
-	{
-		std::string result;
-
-		if (input == NULL || input->GetHandle() == NULL)
-		{
-			return result;
-		}
-
-		wchar_t text[32] = { 0 };
-		GetWindowTextW(input->GetHandle(), text, _countof(text));
-
-		for (int i = 0; text[i] != 0; i++)
-		{
-			wchar_t ch = g_pMultiLanguage->ConvertFulltoHalfWidthChar(text[i]);
-
-			if (ch >= L'0' && ch <= L'9')
-			{
-				result.push_back((char)ch);
-			}
-		}
-
-		return result;
-	}
 }
 
 CB_DangKyInGame* CB_DangKyInGame::Instance()
@@ -322,21 +297,26 @@ bool CB_DangKyInGame::RenderInput(float x, float y, float w, float h, CUITextInp
 	return true;
 }
 
-bool CB_DangKyInGame::CheckCaptcha() const
+bool CB_DangKyInGame::CheckCaptcha(const char* input) const
 {
-	return this->Captcha == ReadNumberInputText(this->CInputCaptCha);
+	return input != NULL && this->Captcha.compare(input) == 0;
 }
 
 bool CB_DangKyInGame::HandleConfirmSubmit()
 {
+	char captcha[5] = { 0 };
+
 	if (this->CInputCaptCha == NULL)
 	{
 		return false;
 	}
 
-	if (!this->CheckCaptcha())
+	this->CInputCaptCha->GetText(captcha, sizeof(captcha));
+
+	if (!this->CheckCaptcha(captcha))
 	{
 		this->OpenMessageBox(false, "Error", "Sai Ma Captcha");
+		this->ResetCaptcha();
 		return false;
 	}
 
