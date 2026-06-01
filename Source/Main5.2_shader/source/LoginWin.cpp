@@ -737,23 +737,27 @@ void CLoginWin::SaveAccount(std::string NameId, std::string PassID)
 	{
 		bool accountFound = false;
 
-		for (auto& account : stAccountMacro)
+		for (auto it = stAccountMacro.begin(); it != stAccountMacro.end(); ++it)
 		{
-			if (account.NameId == NameId)
+			if (it->NameId == NameId)
 			{
-				account.PassID = PassID;
+				it->PassID = PassID;
+				LOGIN_ACCOUNT_REG temp = *it;
+				stAccountMacro.erase(it);
+				stAccountMacro.insert(stAccountMacro.begin(), temp);
 				accountFound = true;
 				break;
 			}
 		}
 
-		// Si no se encontró, agregamos la nueva cuenta
+		// Si no se encontro, agregamos la nueva cuenta
 		if (!accountFound)
 		{
-			if (stAccountMacro.size() < MAX_ACCOUNT_REG)
+			if (stAccountMacro.size() >= MAX_ACCOUNT_REG)
 			{
-				stAccountMacro.push_back({ NameId, PassID });
+				stAccountMacro.pop_back();
 			}
+			stAccountMacro.insert(stAccountMacro.begin(), { NameId, PassID });
 		}
 
 		ReloadAccount(false, true, true);
