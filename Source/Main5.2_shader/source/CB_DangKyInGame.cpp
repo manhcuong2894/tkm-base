@@ -35,26 +35,6 @@ namespace
 
 		return true;
 	}
-
-	std::string NormalizeCaptchaInput(const char* str)
-	{
-		std::string result;
-
-		if (str == NULL)
-		{
-			return result;
-		}
-
-		for (const char* current = str; *current != 0; current++)
-		{
-			if (isdigit((unsigned char)*current))
-			{
-				result.push_back(*current);
-			}
-		}
-
-		return result;
-	}
 }
 
 CB_DangKyInGame* CB_DangKyInGame::Instance()
@@ -319,7 +299,7 @@ bool CB_DangKyInGame::RenderInput(float x, float y, float w, float h, CUITextInp
 
 bool CB_DangKyInGame::CheckCaptcha(const char* input) const
 {
-	return this->Captcha.compare(NormalizeCaptchaInput(input)) == 0;
+	return input != NULL && this->Captcha.compare(input) == 0;
 }
 
 bool CB_DangKyInGame::HandleConfirmSubmit()
@@ -336,6 +316,7 @@ bool CB_DangKyInGame::HandleConfirmSubmit()
 	if (!this->CheckCaptcha(captcha))
 	{
 		this->OpenMessageBox(false, "Error", "Sai Ma Captcha");
+		this->ResetCaptcha();
 		return false;
 	}
 
